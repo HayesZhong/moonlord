@@ -1,0 +1,15 @@
+h4.info-title {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left; }
+
+ul.pagination {
+  margin: 0; }
+
+.pagination > li > a {
+  padding: 6px 12px; }
+
+.pagination > .active > a, .pagination > .active > a:hover, .pagination > .active > a:focus {
+  background-color: #1ab394;
+  color: white; }
+/*# sourceMappingURL=sourcemaps/info.css.map */

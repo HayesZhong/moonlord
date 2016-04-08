@@ -1,0 +1,56 @@
+table.fixedHeader-floating {
+  position: fixed !important;
+  background-color: white; }
+
+table.fixedHeader-floating.no-footer {
+  border-bottom-width: 0; }
+
+table.fixedHeader-locked {
+  position: absolute !important;
+  background-color: white; }
+
+@media print {
+  table.fixedHeader-floating {
+    display: none; } }
+.btn-default, .btn-default:focus {
+  background-color: #fff;
+  color: #333; }
+
+.flex-row {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-content: space-between;
+  -ms-flex-line-pack: justify;
+  align-content: space-between; }
+  .flex-row label {
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0; }
+
+label {
+  margin: 10px; }
+
+#date_range {
+  width: 190px; }
+
+.panel-heading {
+  background-color: #FEFEFE; }
+
+.ibox-content {
+  border-width: 0 1px; }
+
+.dataTables_wrapper {
+  padding-bottom: 0; }
+
+#toggle_query {
+  position: absolute;
+  right: 20px;
+  top: 12px; }
+  #toggle_query a {
+    color: gray; }
+  #toggle_query.t-open a.t-close {
+    display: none; }
+  #toggle_query.t-close a.t-open {
+    display: none; }
+/*# sourceMappingURL=sourcemaps/checking.css.map */

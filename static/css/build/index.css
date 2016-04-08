@@ -1,0 +1,99 @@
+header {
+  background-color: white;
+  padding: 10px 28px;
+  border-top: 5px solid #1ab394;
+  margin-bottom: 10px; }
+  header h1 {
+    color: black;
+    margin-top: 14px;
+    font-size: 26px; }
+  header .navbar-right {
+    position: absolute;
+    right: 0;
+    top: 10px; }
+
+main.container-fluid {
+  padding: 0 40px; }
+
+.title-box {
+  color: white;
+  margin-bottom: 10px; }
+  .title-box .title {
+    background-color: #59E2A7;
+    background-color: rgba(89, 226, 167, 0.39);
+    padding: 13px 20px;
+    font-size: 24px;
+    border-bottom: 3px solid white; }
+    .title-box .title h3 {
+      margin: 0; }
+  .title-box .content {
+    padding: 20px;
+    font-size: 13px;
+    background-color: #0E1317;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ccc; }
+
+.project-list {
+  margin-bottom: 30px;
+  background-color: #0E1317;
+  background-color: rgba(0, 0, 0, 0.7); }
+  .project-list .item {
+    padding: 10px 15px;
+    transition: all 0.5s ease;
+    border-left: 5px solid #50ACFE;
+    border-bottom: 1px solid #222A31;
+    cursor: pointer; }
+    .project-list .item:hover {
+      background-color: #0d8ddb;
+      -webkit-transform: translatex(10px);
+      -ms-transform: translatex(10px);
+      transform: translatex(10px); }
+    .project-list .item:last-child {
+      border-bottom: 0; }
+    .project-list .item h3 {
+      font-size: 16px;
+      color: #eee; }
+    .project-list .item p {
+      font-size: 13px;
+      color: #ccc; }
+
+#map {
+  position: relative;
+  margin-bottom: 30px; }
+  #map img {
+    width: 100%; }
+  #map .marks {
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer; }
+    #map .marks:hover .intro {
+      background-color: rgba(34, 185, 253, 0.7); }
+    #map .marks:hover .circle {
+      background-color: yellow; }
+    #map .marks.disabled .intro {
+      background-color: rgba(50, 50, 50, 0.7); }
+    #map .marks .circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3.5px solid #33A1A1;
+      background-color: white;
+      float: left;
+      transition: all 0.5s ease; }
+    #map .marks.disabled .circle {
+      background-color: gray; }
+    #map .marks .intro {
+      border-top: 2px solid #22B9FD;
+      float: left;
+      color: #fff;
+      padding: 10px 20px;
+      background-color: #0E1317;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.7);
+      margin: -6px 10px 0 10px;
+      transition: all 0.5s ease; }
+
+#remember.active {
+  margin-top: -9px; }
+/*# sourceMappingURL=sourcemaps/index.css.map */

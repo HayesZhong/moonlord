@@ -1,0 +1,13 @@
+.simplecolorpicker.icon, .simplecolorpicker span.color {
+  width: 30px;
+  height: 30px; }
+
+input[type=radio].radio_hide {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none; }
+
+#icon_modal .modal-body button {
+  margin: 2px;
+  width: 50px; }
+/*# sourceMappingURL=sourcemaps/config.css.map */
