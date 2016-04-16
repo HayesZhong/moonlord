@@ -3,8 +3,8 @@
   <meta charset="utf-8">
  </head>
  <body>
-<div class="row border-bottom">
-      <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+<div class="row border-bottom" style="height: 51px;">
+      <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0;height: 50px;">
         <div class="navbar-header">
           <a class="navbar-minimalize minimalize-styl-2 btn " href="#"><i class="fa fa-bars"></i> </a>
 

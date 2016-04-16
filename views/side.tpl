@@ -9,39 +9,34 @@
             <h2>MoonLord</h2>
           </div>
         </li>
-        <li>
-          <a href="second_index.html">
-            <i class="fa fa-home"></i> <span class="nav-label">首页</span>
+		
+		{{if eq .pagename "tranerest"}}
+		<li class="active">
+		{{else}}
+		<li>
+		{{end}}
+          <a href="index">
+            <i class="fa fa-search"></i> <span class="nav-label">相似轨迹查询</span>
           </a>
         </li>
-        <li>
-          <a href="info.html">
-            <i class="fa fa-file-text-o"></i> <span class="nav-label">信息公告</span>
+		
+        {{if eq .pagename "pointnerest"}}
+		<li class="active">
+		{{else}}
+		<li>
+		{{end}}
+          <a href="pointnerest">
+            <i class="fa fa-map-marker"></i> <span class="nav-label">点最近轨迹</span>
           </a>
         </li>
-        <li class="active">
-          <a href="checking.html">
-            <i class="fa fa-info-circle"></i> <span class="nav-label">巡检信息</span>
-          </a>
-        </li>
-        <li>
-          <a href="second_index.html">
-            <i class="fa fa-database"></i> <span class="nav-label">数据汇集</span>
-          </a>
-        </li>
-        <li>
-          <a href="second_index.html">
-            <i class="fa fa-dashboard"></i> <span class="nav-label">阈值分析</span>
-          </a>
-        </li>
-        <li>
-          <a href="second_index.html">
-            <i class="fa fa-bell-o"></i> <span class="nav-label">大坝预警 <span class="badge badge-danger">42</span></span>
-          </a>
-        </li>
-        <li>
-          <a href="config.html">
-            <i class="fa fa-cog"></i> <span class="nav-label">设置</span>
+		
+        {{if eq .pagename "addtra"}}
+		<li class="active">
+		{{else}}
+		<li>
+		{{end}}
+          <a href="addtra">
+            <i class="fa fa-plus-square-o"></i> <span class="nav-label">添加轨迹</span>
           </a>
         </li>
       </ul>

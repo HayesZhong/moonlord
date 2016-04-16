@@ -98,13 +98,8 @@ func (k *KlamanFilter) xnf(i int) [][]float64 {
 		return r
 	}
 	xn_1f := k.xn_1f(i)
-	t1 := xn_1f
-	t2 := matrix.DotProduct(H, xn_1f)
-	t3 := matrix.Subtract([][]float64{{k.X[i]}, {k.Y[i]}}, t2)
-	t4 := matrix.DotProduct(k.knf(i), t3)
-	r := matrix.Add(t1, t4)
-	k.xn[i] = r
-	return r
+	k.xn[i] = matrix.Add(xn_1f, matrix.DotProduct(k.knf(i), matrix.Subtract([][]float64{{k.X[i]}, {k.Y[i]}}, matrix.DotProduct(H, xn_1f))))
+	return k.xn[i]
 }
 
 func (k *KlamanFilter) xn_1f(i int) [][]float64 {
@@ -114,9 +109,8 @@ func (k *KlamanFilter) xn_1f(i int) [][]float64 {
 	if k.xn_1[i] != nil {
 		return k.xn_1[i]
 	}
-	r := matrix.DotProduct(k.getA(i), k.xnf(i-1))
-	k.xn_1[i] = r
-	return r
+	k.xn_1[i] = matrix.DotProduct(k.getA(i), k.xnf(i-1))
+	return k.xn_1[i]
 }
 
 func (k *KlamanFilter) pnf(i int) [][]float64 {
@@ -132,13 +126,8 @@ func (k *KlamanFilter) pnf(i int) [][]float64 {
 		k.pn[0] = r
 		return r
 	}
-	pn_1f := k.pn_1f(i)
-	t1 := matrix.DotProduct(k.knf(i), H)
-	t2 := matrix.Subtract(I, t1)
-	r := matrix.DotProduct(t2, pn_1f)
-	k.pn[i] = r
-	return r
-
+	k.pn[i] = matrix.DotProduct(matrix.Subtract(I, matrix.DotProduct(k.knf(i), H)), k.pn_1f(i))
+	return k.pn[i]
 }
 
 func (k *KlamanFilter) pn_1f(i int) [][]float64 {
@@ -149,11 +138,8 @@ func (k *KlamanFilter) pn_1f(i int) [][]float64 {
 		return nil
 	}
 	A := k.getA(i)
-	t1 := matrix.DotProduct(A, k.pnf(i-1))
-	t2 := matrix.DotProduct(t1, matrix.Transpose(A))
-	r := matrix.Add(t2, Q)
-	k.pn_1[i] = r
-	return r
+	k.pn_1[i] = matrix.Add(matrix.DotProduct(matrix.DotProduct(A, k.pnf(i-1)), matrix.Transpose(A)), Q)
+	return k.pn_1[i]
 }
 
 func (k *KlamanFilter) knf(i int) [][]float64 {
@@ -161,9 +147,6 @@ func (k *KlamanFilter) knf(i int) [][]float64 {
 		return k.kn[i]
 	}
 	pn_1f := k.pn_1f(i)
-	t1 := matrix.DotProduct(pn_1f, matrix.Transpose(H))
-	t2 := matrix.DotProduct(matrix.DotProduct(H, pn_1f), matrix.Transpose(H))
-	r := matrix.DotProduct(t1, matrix.Inverse(matrix.Add(R, t2)))
-	k.kn[i] = r
-	return r
+	k.kn[i] = matrix.DotProduct(matrix.DotProduct(pn_1f, matrix.Transpose(H)), matrix.Inverse(matrix.Add(R, matrix.DotProduct(matrix.DotProduct(H, pn_1f), matrix.Transpose(H)))))
+	return k.kn[i]
 }

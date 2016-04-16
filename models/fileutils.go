@@ -2,23 +2,71 @@ package models
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"math"
 	"math/rand"
+	"moonlord/models/mmap"
 	"os"
 	"strings"
 	"time"
 )
 
-//以后要改造成消费者生产者模式，使用多线程
-func GetTraData(filePath string, num int) ([][]Tra, error) {
-	dataFile, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
-	if err != nil {
-		return nil, err
-	}
+const (
+	DELIM = '#'
+)
+
+//使用单线程读取 多线程处理
+func GetTraDataUseChan(filePath string, num int, trasChan chan<- []Tra) {
+	dataFile, _ := os.OpenFile(filePath, os.O_RDONLY, 0666)
+
 	defer dataFile.Close()
 
 	dataReader := bufio.NewReader(dataFile)
+	if num <= 0 {
+		num = math.MaxInt64
+	}
 
+	isend := false
+	var x, y float64
+	var dateStr, timeStr string
+	var line []byte
+	var timeTmp time.Time
+	var err error
+
+	for i := 0; i < num; i++ {
+		tras := make([]Tra, 0, 20)
+		for {
+			line, _, err = dataReader.ReadLine()
+			if err != nil {
+				isend = true
+				break
+			}
+			if strings.Compare("#", string(line)) == 0 {
+				break
+			}
+			fmt.Sscanf(string(line), "%f,%f,%s %s", &x, &y, &dateStr, &timeStr)
+			timeTmp, err = time.Parse("2006/01/02 15:04:05", dateStr+" "+timeStr)
+			if err != nil {
+				continue
+			}
+			tras = append(tras, Tra{
+				Lat: x,
+				Lon: y,
+				T:   timeTmp.Unix(),
+			})
+
+		}
+		if isend {
+			break
+		}
+		trasChan <- tras
+	}
+	close(trasChan)
+
+}
+
+func GetTraDataFromReader(dataReader *bufio.Reader, num int) [][]Tra {
 	traDataSize := 0
 	if num >= 1 {
 		traDataSize = num
@@ -26,7 +74,6 @@ func GetTraData(filePath string, num int) ([][]Tra, error) {
 		traDataSize = 1000
 	}
 	traDatas := make([][]Tra, 0, num)
-
 	traNowSize := 0
 	isend := false
 	for {
@@ -39,7 +86,7 @@ func GetTraData(filePath string, num int) ([][]Tra, error) {
 				isend = true
 				break
 			}
-			if strings.Compare("######", string(line)) == 0 {
+			if strings.Compare("#", string(line)) == 0 {
 				break
 			}
 			fmt.Sscanf(string(line), "%f,%f,%s %s", &x, &y, &dateStr, &timeStr)
@@ -48,10 +95,9 @@ func GetTraData(filePath string, num int) ([][]Tra, error) {
 				continue
 			}
 			traDatas[traNowSize] = append(traDatas[traNowSize], Tra{
-				Lat:  x,
-				Lon:  y,
-				Time: timeTmp,
-				Ht:   true,
+				Lat: x,
+				Lon: y,
+				T:   timeTmp.Unix(),
 			})
 
 		}
@@ -66,7 +112,41 @@ func GetTraData(filePath string, num int) ([][]Tra, error) {
 			break
 		}
 	}
-	return traDatas, nil
+	return traDatas
+}
+
+//
+func GetTraData(filePath string, num int) ([][]Tra, error) {
+	dataFile, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
+	if err != nil {
+		return nil, err
+	}
+	defer dataFile.Close()
+
+	dataReader := bufio.NewReader(dataFile)
+
+	mtras := GetTraDataFromReader(dataReader, num)
+	return mtras, nil
+
+}
+
+//使用内存映射，效果不好。。。
+func GetTraDataUseMmap(filePath string, num int) ([][]Tra, error) {
+	dataFile, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
+	if err != nil {
+		return nil, err
+	}
+	defer dataFile.Close()
+
+	data, err2 := mmap.Map(dataFile, mmap.RDONLY, 0)
+	defer data.Unmap()
+	if err2 != nil {
+		return nil, err2
+	}
+	dataReader := bufio.NewReader(bytes.NewBuffer(data))
+
+	mtras := GetTraDataFromReader(dataReader, num)
+	return mtras, nil
 
 }
 
@@ -111,7 +191,7 @@ func FileFormat(source string, dest string) {
 					break
 				}
 				if lineNum == traPointNum {
-					formatDataWriter.WriteString(tmpTra + "######\n")
+					formatDataWriter.WriteString(tmpTra + "#\n")
 					traNum++
 					formatDataWriter.Flush()
 					tmpTra = ""
@@ -119,7 +199,7 @@ func FileFormat(source string, dest string) {
 				}
 			}
 			if lineNum >= 20 {
-				formatDataWriter.WriteString(tmpTra + "######\n")
+				formatDataWriter.WriteString(tmpTra + "#\n")
 				traNum++
 				formatDataWriter.Flush()
 			}

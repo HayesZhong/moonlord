@@ -1,16 +1,17 @@
 package routers
 
 import (
-	"github.com/astaxie/beego"
 	"moonlord/controllers"
+
+	"github.com/astaxie/beego"
 )
 
 func init() {
 	beego.Router("/", &controllers.ViewController{}, "*:Index")
 	beego.Router("/index", &controllers.ViewController{}, "*:Index")
-	beego.Router("/nerest", &controllers.ViewController{}, "*:Nerest")
+	beego.Router("/pointnerest", &controllers.ViewController{}, "*:PointNerest")
 
-	beego.Router("/api/getonetras", &controllers.ApiController{}, "*:GetOneTras")
-	beego.Router("/api/getnearestmtras", &controllers.ApiController{}, "*:GetNearestMTras")
-
+	beego.Router("/api/nearestmtras", &controllers.ApiController{}, "*:GetNearestMTrasByPoint")
+	beego.Router("/api/trasnum", &controllers.ApiController{}, "*:GetTrasNum")
+	beego.Router("/api/getsimtra", &controllers.ApiController{}, "*:GetSimMTrasByTras")
 }

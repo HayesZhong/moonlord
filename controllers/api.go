@@ -1,23 +1,38 @@
 package controllers
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/astaxie/beego"
 	"moonlord/models"
 	"time"
+
+	"github.com/astaxie/beego"
 )
+
+type MtrasResult struct {
+	Status  int            `json:"status"`
+	Message string         `json:"message"`
+	Center  models.Tra     `json:"center"`
+	Zoom    int            `json:"zoom"`
+	Mtras   [][]models.Tra `json:"mtras"`
+}
 
 type ApiController struct {
 	beego.Controller
 }
 
-func (this *ApiController) GetOneTras() {
-	index, _ := this.GetInt32("index", 0)
-	this.Data["json"] = &models.MTras[index]
+func (this *ApiController) GetTrasNum() {
+	type Num struct {
+		Num int
+	}
+	this.Data["json"] = &Num{
+		Num: models.RTree.GetSize(),
+	}
 	this.ServeJSON()
 }
 
-func (this *ApiController) GetNearestMTras() {
+func (this *ApiController) GetNearestMTrasByPoint() {
+
 	var timeStr string
 	var pointTime time.Time
 	var lat, lon float64
@@ -28,21 +43,57 @@ func (this *ApiController) GetNearestMTras() {
 	lon, err = this.GetFloat("lon")
 	limit, _ := this.GetInt("limit", 1)
 	if err != nil {
+		this.Data["json"] = &MtrasResult{
+			Status:  0,
+			Message: err.Error(),
+		}
+		this.ServeJSON()
 		return
 	}
-	x, y, zone := models.WGS2UTM(lat, lon)
 
-	mtras := getNearestTrasByPoint(zone, limit, []float64{x, y, float64(pointTime.Unix())})
-	this.Data["json"] = &mtras
+	market := &models.Tra{
+		Lat: lat,
+		Lon: lon,
+	}
+	market.LatLon2XY()
+	mtras := getNearestTrasByPoint(limit, []float64{market.X, market.Y, float64(pointTime.Unix() / models.TIME_SCALE)})
+
+	center, zoom := caclCenterAndZoom(GetMTrasMinAndMaxWithMarketNT(mtras, market))
+
+	this.Data["json"] = &MtrasResult{
+		Status: 1,
+		Center: *center,
+		Zoom:   zoom,
+		Mtras:  mtras,
+	}
 	this.ServeJSON()
 }
 
-func getNearestTrasByPoint(zone, limit int, point []float64) [][]models.Tra {
-	fmt.Println(models.RTrees[zone].Dim)
-	rects := models.RTrees[zone].NearestNeighbors(limit, point)
-	mtras := make([][]models.Tra, len(rects))
-	for i, rect := range rects {
-		mtras[i] = rect.Bounds().GetTras()
+func (this *ApiController) GetSimMTrasByTras() {
+	type result struct {
+		Status  int            `json:"status"`
+		Message string         `json:"message"`
+		Tras    [][]models.Tra `json:"tras"`
 	}
-	return mtras
+	file, _, err := this.GetFile("trafile")
+	defer file.Close()
+	if err != nil {
+		this.Data["json"] = &result{
+			Status:  0,
+			Message: err.Error(),
+		}
+		this.ServeJSON()
+		return
+	}
+
+	fileReader := bufio.NewReader(file)
+	tras := GetTraDataFromUploadFileReader(fileReader)
+	fmt.Println(tras)
+
+	this.Data["json"] = &result{
+		Status:  1,
+		Message: "sucess",
+		Tras:    [][]models.Tra{tras},
+	}
+	this.ServeJSON()
 }
